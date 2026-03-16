@@ -73,6 +73,11 @@ exports.loginUser = async (req, res) => {
   res.status(200).json({
     status: "success",
     token: generateToken(user._id),
+    user: {
+      name: user.name,
+      email: user.email,
+      _id: user._id,
+    },
   });
 };
 //GET THE USER PROFILE WHO IS LOGGED IN

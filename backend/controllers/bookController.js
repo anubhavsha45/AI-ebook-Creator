@@ -5,7 +5,7 @@ const Book = require("../models/Book");
 // @access  Private
 exports.createBook = async (req, res) => {
   try {
-    const { title, author, subtitle, chapters } = req.body;
+    const { title, author, subtitle, chapters, coverImage } = req.body;
 
     if (!title || !author) {
       return res
@@ -19,6 +19,7 @@ exports.createBook = async (req, res) => {
       author,
       subtitle,
       chapters,
+      coverImage,
     });
 
     return res.status(201).json(book);

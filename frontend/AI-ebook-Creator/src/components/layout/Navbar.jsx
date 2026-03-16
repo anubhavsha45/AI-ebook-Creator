@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, BookOpen } from "lucide-react";
+import { Link } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 import { useAuth } from "../../context/AuthContext";
 
@@ -25,14 +26,14 @@ const Navbar = () => {
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [profileDropdownOpen]);
+  }, []);
 
   return (
-    <header>
+    <header className="border-b bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a href="/" className="flex items-center space-x-2.5 group">
+          <Link to="/" className="flex items-center space-x-2.5 group">
             <div className="w-9 h-9 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-all duration-300 group-hover:scale-110">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
@@ -40,7 +41,7 @@ const Navbar = () => {
             <span className="text-xl font-semibold text-gray-900 tracking-tight">
               AI eBook Creator
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">
@@ -55,36 +56,47 @@ const Navbar = () => {
             ))}
           </nav>
 
-          {/* Auth Buttons & Profile */}
+          {/* Auth Buttons / Profile */}
           <div className="hidden lg:flex items-center space-x-3">
             {isAuthenticated ? (
-              <ProfileDropdown
-                isOpen={profileDropdownOpen}
-                onToggle={(e) => {
-                  e.stopPropagation();
-                  setProfileDropdownOpen(!profileDropdownOpen);
-                }}
-                avatar={user?.avatar || ""}
-                companyName={user?.name || ""}
-                email={user?.email || ""}
-                userRole={user?.role || ""}
-                onLogout={() => logout()}
-              />
+              <>
+                {/* Dashboard Link */}
+                <Link
+                  to="/dashboard"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-violet-600 rounded-lg hover:bg-violet-50 transition-all duration-200"
+                >
+                  Dashboard
+                </Link>
+
+                {/* Profile Dropdown */}
+                <ProfileDropdown
+                  isOpen={profileDropdownOpen}
+                  onToggle={(e) => {
+                    e.stopPropagation();
+                    setProfileDropdownOpen(!profileDropdownOpen);
+                  }}
+                  avatar={user?.avatar || ""}
+                  companyName={user?.name || ""}
+                  email={user?.email || ""}
+                  userRole={user?.role || ""}
+                  onLogout={() => logout()}
+                />
+              </>
             ) : (
               <>
-                <a
-                  href="/login"
+                <Link
+                  to="/login"
                   className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-all duration-200"
                 >
                   Login
-                </a>
+                </Link>
 
-                <a
-                  href="/signup"
-                  className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-violet-400 to-purple-500 rounded-lg hover:from-violet-700 hover:to-purple-700 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all duration-200"
+                <Link
+                  to="/signup"
+                  className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg hover:from-violet-600 hover:to-purple-700 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all duration-200"
                 >
                   Get Started
-                </a>
+                </Link>
               </>
             )}
           </div>

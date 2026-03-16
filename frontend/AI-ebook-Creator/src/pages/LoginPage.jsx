@@ -1,8 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../components/ui/Button";
 import InputField from "../components/ui/InputField";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosInstance";
+import { API_PATHS } from "../utils/apiPaths";
+
 const Login = () => {
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+        email,
+        password,
+      });
+
+      const token = response.data.token;
+      console.log(response.data);
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login failed:", error.response?.data || error.message);
+      alert("Login failed. Check your credentials.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
       <div className="w-full max-w-md bg-white p-10 rounded-2xl shadow-lg border border-gray-100">
@@ -18,17 +47,21 @@ const Login = () => {
 
         {/* Form */}
 
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleLogin}>
           <InputField
             label="Email Address"
             type="email"
             placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <InputField
             label="Password"
             type="password"
             placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           <Button type="submit" className="w-full">
