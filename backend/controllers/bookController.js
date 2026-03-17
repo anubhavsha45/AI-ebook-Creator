@@ -127,30 +127,33 @@ exports.deleteBook = async (req, res) => {
 // @access  Private
 exports.updateBookCover = async (req, res) => {
   try {
+    console.log("FILE:", req.file);
+
     const book = await Book.findById(req.params.id);
 
-    // Check if book exists
     if (!book) {
       return res.status(404).json({ message: "Book not found" });
     }
 
-    // Check if the logged-in user owns the book
     if (book.userId.toString() !== req.user._id.toString()) {
       return res
         .status(401)
         .json({ message: "Not authorized to update this book" });
     }
 
-    if (req.file) {
-      book.coverImage = `/${req.file.path}`;
-    } else {
+    if (!req.file) {
       return res.status(400).json({ message: "No image file provided" });
     }
 
+    // ✅ Correct path
+    book.coverImage = `uploads/${req.file.filename}`;
+
     const updatedBook = await book.save();
 
-    res.status(200).json(updateBook);
+    // ✅ FIXED RESPONSE
+    res.status(200).json(updatedBook);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("UPLOAD ERROR:", error);
+    res.status(500).json({ message: error.message });
   }
 };

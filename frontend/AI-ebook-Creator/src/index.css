@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 
+@plugin "@tailwindcss/typography";
+
 @theme {
   --font-display: "Inter", sans-serif;
   --breakpoint-3xl: 1920px;
@@ -16,4 +18,18 @@
   body {
     background-color: #fcfcfc;
   }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease;
 }
