@@ -21,18 +21,17 @@ function EditorPage() {
   const [showExport, setShowExport] = useState(false);
   const dropdownRef = useRef(null);
 
-  // ✅ NEW: toast message
   const [successMsg, setSuccessMsg] = useState("");
 
-  // Close dropdown
+  // ✅ Close dropdown properly
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowExport(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   // Fetch book
@@ -101,13 +100,11 @@ function EditorPage() {
 
       setChapters(updatedChapters);
 
-      // ✅ SUCCESS TOAST
       setSuccessMsg("Saved successfully ✅");
       setTimeout(() => setSuccessMsg(""), 2000);
     } catch (err) {
       console.error(err);
 
-      // ❌ ERROR TOAST
       setSuccessMsg("Save failed ❌");
       setTimeout(() => setSuccessMsg(""), 2000);
     }
@@ -158,7 +155,7 @@ function EditorPage() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
-      {/* ✅ TOAST */}
+      {/* TOAST */}
       {successMsg && (
         <div className="fixed top-4 right-4 bg-black text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm">
           {successMsg}
@@ -167,7 +164,6 @@ function EditorPage() {
 
       {/* TOP BAR */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 px-4 md:px-6 py-3 bg-white border-b shadow-sm">
-        {/* LEFT */}
         <div className="flex flex-wrap gap-3 items-center">
           <button
             onClick={() => navigate("/dashboard")}
@@ -201,14 +197,17 @@ function EditorPage() {
         <div className="flex gap-2 items-center flex-wrap" ref={dropdownRef}>
           <div className="relative">
             <button
-              onClick={() => setShowExport(!showExport)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowExport((prev) => !prev);
+              }}
               className="border px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 cursor-pointer"
             >
               Export ⬇
             </button>
 
             {showExport && (
-              <div className="absolute right-0 mt-2 w-44 bg-white border rounded-xl shadow-xl z-50">
+              <div className="fixed top-16 right-4 w-44 bg-white border rounded-xl shadow-xl z-[9999]">
                 <button
                   onClick={() => {
                     exportPDF();
@@ -243,7 +242,6 @@ function EditorPage() {
 
       {/* MAIN */}
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
-        {/* SIDEBAR */}
         <div className="md:w-72 bg-white border-r p-4 overflow-x-auto md:overflow-y-auto">
           <h3 className="font-semibold mb-4">Chapters</h3>
 
@@ -265,7 +263,7 @@ function EditorPage() {
         </div>
 
         {/* CONTENT */}
-        <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+        <div className="flex-1 p-2 md:p-6 overflow-y-auto">
           <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
             {activeTab === "editor" ? (
               <>
@@ -300,7 +298,11 @@ function EditorPage() {
                 </div>
 
                 {mode === "edit" ? (
-                  <MDEditor value={value} onChange={setValue} height={300} />
+                  <MDEditor
+                    value={value}
+                    onChange={setValue}
+                    height={window.innerWidth < 768 ? 400 : 600}
+                  />
                 ) : (
                   <MDEditor.Markdown source={value} />
                 )}
