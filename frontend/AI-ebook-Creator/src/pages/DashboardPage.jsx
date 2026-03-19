@@ -24,7 +24,6 @@ const DashboardPage = () => {
     fetchBooks();
   }, []);
 
-  // 🗑 DELETE BOOK
   const deleteBook = async (id) => {
     try {
       await axiosInstance.delete(`/api/book/${id}`);
@@ -39,13 +38,15 @@ const DashboardPage = () => {
     <div className="min-h-screen bg-gray-50">
       <DashboardNavbar />
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10">
         {/* HEADER */}
-        <div className="flex justify-between items-center mb-10">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8 md:mb-10">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">All eBooks</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+              All eBooks
+            </h1>
 
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm mt-1">
               Create, edit, and manage your AI-generated eBooks.
             </p>
           </div>
@@ -53,22 +54,23 @@ const DashboardPage = () => {
           <button
             onClick={() => setOpenModal(true)}
             className="bg-violet-600 hover:bg-violet-700 
-            text-white px-5 py-2 rounded-lg transition shadow-sm"
+            text-white px-5 py-2 rounded-lg transition shadow-sm 
+            w-full md:w-auto cursor-pointer"
           >
             + Create New eBook
           </button>
         </div>
 
-        {/* 🔥 EMPTY STATE */}
+        {/* EMPTY STATE */}
         {books.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center mt-24">
-            <div className="text-6xl mb-4">✨</div>
+          <div className="flex flex-col items-center justify-center text-center mt-16 md:mt-24 px-4">
+            <div className="text-5xl md:text-6xl mb-4">✨</div>
 
-            <h2 className="text-2xl font-semibold text-gray-800">
+            <h2 className="text-xl md:text-2xl font-semibold text-gray-800">
               No eBooks yet
             </h2>
 
-            <p className="text-gray-500 mt-2 max-w-md">
+            <p className="text-gray-500 mt-2 max-w-md text-sm md:text-base">
               You haven't created any eBooks yet. Let AI generate something
               amazing for you 🚀
             </p>
@@ -77,14 +79,14 @@ const DashboardPage = () => {
               onClick={() => setOpenModal(true)}
               className="mt-6 bg-violet-600 hover:bg-violet-700 
               text-white px-6 py-2 rounded-lg shadow-md 
-              hover:scale-105 transition"
+              hover:scale-105 transition w-full md:w-auto cursor-pointer"
             >
               Create Your First eBook
             </button>
           </div>
         ) : (
           /* GRID */
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6">
             {books.map((book) => (
               <div
                 key={book._id}
@@ -112,8 +114,10 @@ const DashboardPage = () => {
 
                 {/* TEXT */}
                 <div className="absolute bottom-4 left-4 text-white z-10">
-                  <h3 className="font-semibold text-lg">{book.title}</h3>
-                  <p className="text-sm opacity-80">{book.author}</p>
+                  <h3 className="font-semibold text-base md:text-lg">
+                    {book.title}
+                  </h3>
+                  <p className="text-xs md:text-sm opacity-80">{book.author}</p>
                 </div>
 
                 {/* ACTION BUTTONS */}
@@ -125,7 +129,7 @@ const DashboardPage = () => {
                   <button
                     onClick={() => navigate(`/editor/${book._id}`)}
                     className="bg-white/90 backdrop-blur p-2 rounded-md 
-                    shadow hover:scale-110 transition"
+                    shadow hover:scale-110 transition cursor-pointer"
                   >
                     <Pencil size={16} />
                   </button>
@@ -133,7 +137,7 @@ const DashboardPage = () => {
                   <button
                     onClick={() => deleteBook(book._id)}
                     className="bg-white/90 backdrop-blur p-2 rounded-md 
-                    shadow hover:scale-110 transition"
+                    shadow hover:scale-110 transition cursor-pointer"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -144,7 +148,6 @@ const DashboardPage = () => {
         )}
       </div>
 
-      {/* MODAL */}
       <CreateBookModal open={openModal} setOpen={setOpenModal} />
     </div>
   );

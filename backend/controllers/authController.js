@@ -76,6 +76,7 @@ exports.loginUser = async (req, res) => {
     user: {
       name: user.name,
       email: user.email,
+      avatar: user.avatar,
       _id: user._id,
     },
   });
@@ -120,6 +121,25 @@ exports.updateUserProfile = async (req, res) => {
     } else {
       res.status(404).json({ message: "User not found" });
     }
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+exports.updateAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    user.avatar = `/${req.file.path}`;
+
+    const updatedUser = await user.save();
+
+    res.json(updatedUser);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }

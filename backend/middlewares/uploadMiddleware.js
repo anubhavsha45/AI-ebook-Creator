@@ -9,7 +9,7 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Set up storage engine
+// Storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadDir);
@@ -23,12 +23,11 @@ const storage = multer.diskStorage({
   },
 });
 
-// Check file type
+// File type check
 function checkFileType(file, cb) {
-  const filetypes = /jpeg|jpg|png|gif/;
+  const filetypes = /jpeg|jpg|png|gif|webp|avif/;
 
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
   const mimetype = filetypes.test(file.mimetype);
 
   if (mimetype && extname) {
@@ -38,13 +37,12 @@ function checkFileType(file, cb) {
   }
 }
 
-// Initialize upload
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   },
-}).single("coverImage"); // Field name for uploaded file
+});
 
 module.exports = upload;

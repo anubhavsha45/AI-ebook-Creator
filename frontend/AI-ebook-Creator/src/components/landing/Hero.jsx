@@ -1,8 +1,22 @@
 import React from "react";
 import { Zap, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import HERO_IMG from "../../assets/hero-img.avif";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  // 🔥 HANDLE CTA CLICK
+  const handleStartCreating = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    } else {
+      navigate("/signup");
+    }
+  };
+
   return (
     <section className="relative overflow-hidden bg-white py-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
@@ -24,11 +38,15 @@ const Hero = () => {
           </p>
 
           <div className="flex gap-4">
-            <button className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+            {/* 🔥 UPDATED BUTTON */}
+            <button
+              onClick={handleStartCreating}
+              className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition cursor-pointer"
+            >
               Start Creating
             </button>
 
-            <button className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+            <button className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-100 transition cursor-pointer">
               Watch Demo
             </button>
           </div>

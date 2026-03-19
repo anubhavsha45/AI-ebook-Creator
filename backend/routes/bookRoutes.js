@@ -14,6 +14,8 @@ router
   .put(bookController.updateBook)
   .delete(bookController.deleteBook);
 
-router.route("/cover/:id").put(upload, bookController.updateBookCover);
+router
+  .route("/cover/:id")
+  .put(upload.single("coverImage"), bookController.updateBookCover);
 
 module.exports = router;

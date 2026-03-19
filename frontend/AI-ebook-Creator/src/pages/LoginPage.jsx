@@ -4,13 +4,13 @@ import InputField from "../components/ui/InputField";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 import { API_PATHS } from "../utils/apiPaths";
-
+import { useAuth } from "../context/AuthContext";
 const Login = () => {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
+  const [email, setEmail] = useState("anubhav@gmail.com");
+  const [password, setPassword] = useState("test1234");
+  const { login } = useAuth();
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -20,10 +20,7 @@ const Login = () => {
         password,
       });
 
-      const token = response.data.token;
-      console.log(response.data);
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      await login(response.data.user, response.data.token);
 
       navigate("/dashboard");
     } catch (error) {

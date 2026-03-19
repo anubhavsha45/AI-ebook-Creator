@@ -179,7 +179,6 @@ const TYPOGRAPHY = {
     sans: "Helvetica",
     sansBold: "Helvetica-Bold",
   },
-
   sizes: {
     title: 28,
     author: 16,
@@ -189,14 +188,12 @@ const TYPOGRAPHY = {
     h3: 14,
     body: 11,
   },
-
   spacing: {
     paragraphSpacing: 12,
     chapterSpacing: 24,
     headingSpacing: 18,
     listSpacing: 8,
   },
-
   colors: {
     text: "#333333",
     heading: "#1A1A1A",
@@ -243,7 +240,6 @@ const renderInlineTokens = (doc, tokens, options = {}) => {
   });
 
   flush();
-
   doc.text("", { continued: false });
 };
 
@@ -261,85 +257,24 @@ const renderMarkdown = (doc, markdown) => {
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
 
-    try {
-      if (token.type === "heading_open") {
-        const level = parseInt(token.tag.slice(1));
+    if (token.type === "heading_open") {
+      doc.font(TYPOGRAPHY.fonts.sansBold).fontSize(TYPOGRAPHY.sizes.h1);
 
-        let size = TYPOGRAPHY.sizes.h1;
-        if (level === 2) size = TYPOGRAPHY.sizes.h2;
-        if (level === 3) size = TYPOGRAPHY.sizes.h3;
-
-        doc
-          .font(TYPOGRAPHY.fonts.sansBold)
-          .fontSize(size)
-          .fillColor(TYPOGRAPHY.colors.heading);
-
-        if (tokens[i + 1].type === "inline") {
-          renderInlineTokens(doc, tokens[i + 1].children, { align: "left" });
-          i++;
-        }
-
-        doc.moveDown();
-      } else if (token.type === "paragraph_open") {
-        doc
-          .font(TYPOGRAPHY.fonts.serif)
-          .fontSize(TYPOGRAPHY.sizes.body)
-          .fillColor(TYPOGRAPHY.colors.text);
-
-        if (tokens[i + 1].type === "inline") {
-          renderInlineTokens(doc, tokens[i + 1].children, { align: "justify" });
-          i++;
-        }
-
-        doc.moveDown();
-      } else if (token.type === "bullet_list_open") {
-        inList = true;
-        listType = "bullet";
-      } else if (token.type === "bullet_list_close") {
-        inList = false;
-        listType = null;
-      } else if (token.type === "ordered_list_open") {
-        inList = true;
-        listType = "ordered";
-        orderedListCounter = 1;
-      } else if (token.type === "ordered_list_close") {
-        inList = false;
-        listType = null;
-      } else if (token.type === "list_item_open") {
-        let bullet = "";
-
-        if (listType === "bullet") bullet = "• ";
-        else {
-          bullet = `${orderedListCounter}. `;
-          orderedListCounter++;
-        }
-
-        doc.text(bullet, { continued: true });
-
-        for (let j = i + 1; j < tokens.length; j++) {
-          if (tokens[j].type === "inline") {
-            renderInlineTokens(doc, tokens[j].children);
-            break;
-          }
-        }
-
-        doc.moveDown();
-      } else if (token.type === "fence" || token.type === "code_block") {
-        doc.font("Courier").fontSize(9).text(token.content, { indent: 20 });
-
-        doc.font(TYPOGRAPHY.fonts.serif);
-      } else if (token.type === "hr") {
-        const y = doc.y;
-
-        doc
-          .moveTo(doc.page.margins.left, y)
-          .lineTo(doc.page.width - doc.page.margins.right, y)
-          .stroke();
-
-        doc.moveDown();
+      if (tokens[i + 1].type === "inline") {
+        renderInlineTokens(doc, tokens[i + 1].children);
+        i++;
       }
-    } catch (err) {
-      console.error("Markdown token error:", err);
+
+      doc.moveDown();
+    } else if (token.type === "paragraph_open") {
+      doc.font(TYPOGRAPHY.fonts.serif).fontSize(TYPOGRAPHY.sizes.body);
+
+      if (tokens[i + 1].type === "inline") {
+        renderInlineTokens(doc, tokens[i + 1].children);
+        i++;
+      }
+
+      doc.moveDown();
     }
   }
 };
@@ -375,6 +310,28 @@ const exportAsPDF = async (req, res) => {
       .font(TYPOGRAPHY.fonts.sansBold)
       .fontSize(TYPOGRAPHY.sizes.title)
       .text(book.title, { align: "center" });
+
+    // ==========================
+    // 🔥 FIX: ADD COVER IMAGE
+    // ==========================
+    if (book.coverImage) {
+      try {
+        const imagePath = `.${book.coverImage}`;
+
+        if (fs.existsSync(imagePath)) {
+          doc.moveDown(2);
+
+          doc.image(imagePath, {
+            fit: [250, 300],
+            align: "center",
+          });
+
+          doc.moveDown(2);
+        }
+      } catch (err) {
+        console.error("Image load error:", err);
+      }
+    }
 
     doc.addPage();
 

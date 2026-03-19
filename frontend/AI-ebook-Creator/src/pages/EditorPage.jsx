@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import MDEditor from "@uiw/react-md-editor";
 import axiosInstance from "../utils/axiosInstance";
@@ -16,14 +16,30 @@ function EditorPage() {
   const [loadingAI, setLoadingAI] = useState(false);
 
   const [activeTab, setActiveTab] = useState("editor");
-  const [mode, setMode] = useState("edit"); // edit | preview
+  const [mode, setMode] = useState("edit");
+
+  const [showExport, setShowExport] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // ✅ NEW: toast message
+  const [successMsg, setSuccessMsg] = useState("");
+
+  // Close dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowExport(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Fetch book
   useEffect(() => {
     const fetchBook = async () => {
       try {
         const res = await axiosInstance.get(`/api/book/${bookId}`);
-
         setBook(res.data);
         setChapters(res.data.chapters || []);
 
@@ -63,7 +79,6 @@ function EditorPage() {
       setValue(res.data.content);
     } catch (err) {
       console.error(err);
-      alert("AI generation failed");
     } finally {
       setLoadingAI(false);
     }
@@ -85,81 +100,78 @@ function EditorPage() {
       });
 
       setChapters(updatedChapters);
+
+      // ✅ SUCCESS TOAST
+      setSuccessMsg("Saved successfully ✅");
+      setTimeout(() => setSuccessMsg(""), 2000);
     } catch (err) {
       console.error(err);
-      alert("Save failed");
+
+      // ❌ ERROR TOAST
+      setSuccessMsg("Save failed ❌");
+      setTimeout(() => setSuccessMsg(""), 2000);
     }
   };
 
   // Export
   const exportPDF = async () => {
-    try {
-      const res = await axiosInstance.get(`/api/export/${bookId}/pdf`, {
-        responseType: "blob",
-      });
+    const res = await axiosInstance.get(`/api/export/${bookId}/pdf`, {
+      responseType: "blob",
+    });
 
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-
-      link.href = url;
-      link.setAttribute("download", `${book.title}.pdf`);
-      link.click();
-    } catch (err) {
-      console.error(err);
-    }
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${book.title}.pdf`);
+    link.click();
   };
 
   const exportDOC = async () => {
-    try {
-      const res = await axiosInstance.get(`/api/export/${bookId}/doc`, {
-        responseType: "blob",
-      });
+    const res = await axiosInstance.get(`/api/export/${bookId}/doc`, {
+      responseType: "blob",
+    });
 
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-
-      link.href = url;
-      link.setAttribute("download", `${book.title}.docx`);
-      link.click();
-    } catch (err) {
-      console.error(err);
-    }
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${book.title}.docx`);
+    link.click();
   };
 
-  // 🔥 COVER IMAGE UPLOAD FUNCTION
+  // Upload
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    try {
-      const formData = new FormData();
-      formData.append("coverImage", file); // MUST match backend
+    const formData = new FormData();
+    formData.append("coverImage", file);
 
-      const res = await axiosInstance.put(
-        `/api/book/cover/${bookId}`,
-        formData,
-      );
+    const res = await axiosInstance.put(`/api/book/cover/${bookId}`, formData);
 
-      setBook((prev) => ({
-        ...prev,
-        coverImage: res.data.coverImage,
-      }));
-    } catch (err) {
-      console.error(err);
-      alert("Upload failed");
-    }
+    setBook((prev) => ({
+      ...prev,
+      coverImage: res.data.coverImage,
+    }));
   };
 
   if (!book) return <div className="p-6">Loading...</div>;
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
+      {/* ✅ TOAST */}
+      {successMsg && (
+        <div className="fixed top-4 right-4 bg-black text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm">
+          {successMsg}
+        </div>
+      )}
+
       {/* TOP BAR */}
-      <div className="flex justify-between items-center px-6 py-3 bg-white border-b shadow-sm">
-        <div className="flex gap-4 items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 px-4 md:px-6 py-3 bg-white border-b shadow-sm">
+        {/* LEFT */}
+        <div className="flex flex-wrap gap-3 items-center">
           <button
             onClick={() => navigate("/dashboard")}
-            className="text-sm text-gray-500 hover:text-black transition"
+            className="text-sm text-gray-500 hover:text-black cursor-pointer"
           >
             ← Back
           </button>
@@ -167,10 +179,8 @@ function EditorPage() {
           <div className="flex gap-2">
             <button
               onClick={() => setActiveTab("editor")}
-              className={`px-3 py-1 rounded-lg transition ${
-                activeTab === "editor"
-                  ? "bg-gray-200 font-medium"
-                  : "text-gray-500 hover:bg-gray-100"
+              className={`px-3 py-1 rounded-lg cursor-pointer ${
+                activeTab === "editor" ? "bg-gray-200" : "hover:bg-gray-100"
               }`}
             >
               Editor
@@ -178,10 +188,8 @@ function EditorPage() {
 
             <button
               onClick={() => setActiveTab("details")}
-              className={`px-3 py-1 rounded-lg transition ${
-                activeTab === "details"
-                  ? "bg-gray-200 font-medium"
-                  : "text-gray-500 hover:bg-gray-100"
+              className={`px-3 py-1 rounded-lg cursor-pointer ${
+                activeTab === "details" ? "bg-gray-200" : "hover:bg-gray-100"
               }`}
             >
               Book Details
@@ -189,25 +197,44 @@ function EditorPage() {
           </div>
         </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={exportPDF}
-            className="border px-3 py-1 rounded-lg hover:bg-gray-100 transition"
-          >
-            📄 PDF
-          </button>
+        {/* RIGHT */}
+        <div className="flex gap-2 items-center flex-wrap" ref={dropdownRef}>
+          <div className="relative">
+            <button
+              onClick={() => setShowExport(!showExport)}
+              className="border px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 cursor-pointer"
+            >
+              Export ⬇
+            </button>
 
-          <button
-            onClick={exportDOC}
-            className="border px-3 py-1 rounded-lg hover:bg-gray-100 transition"
-          >
-            📝 DOC
-          </button>
+            {showExport && (
+              <div className="absolute right-0 mt-2 w-44 bg-white border rounded-xl shadow-xl z-50">
+                <button
+                  onClick={() => {
+                    exportPDF();
+                    setShowExport(false);
+                  }}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  📄 PDF
+                </button>
+
+                <button
+                  onClick={() => {
+                    exportDOC();
+                    setShowExport(false);
+                  }}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  📝 DOC
+                </button>
+              </div>
+            )}
+          </div>
 
           <button
             onClick={saveChapter}
-            className="bg-blue-600 text-white px-4 py-1 rounded-lg 
-            hover:bg-blue-700 transition shadow-sm"
+            className="bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 cursor-pointer"
           >
             Save
           </button>
@@ -215,21 +242,20 @@ function EditorPage() {
       </div>
 
       {/* MAIN */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
         {/* SIDEBAR */}
-        <div className="w-72 bg-white border-r p-4">
+        <div className="md:w-72 bg-white border-r p-4 overflow-x-auto md:overflow-y-auto">
           <h3 className="font-semibold mb-4">Chapters</h3>
 
-          <div className="space-y-1">
+          <div className="flex md:flex-col gap-2">
             {chapters.map((chapter, index) => (
               <div
                 key={index}
                 onClick={() => selectChapter(index)}
-                className={`p-2 rounded-lg cursor-pointer transition-all duration-200
-                ${
+                className={`p-2 rounded-lg cursor-pointer whitespace-nowrap ${
                   selectedChapter === index
-                    ? "bg-blue-100 text-blue-700 border-l-4 border-blue-600"
-                    : "hover:bg-gray-100 hover:pl-3"
+                    ? "bg-blue-100 text-blue-700"
+                    : "hover:bg-gray-100"
                 }`}
               >
                 {chapter.title}
@@ -239,36 +265,27 @@ function EditorPage() {
         </div>
 
         {/* CONTENT */}
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-sm p-6 transition-all duration-300">
+        <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
             {activeTab === "editor" ? (
               <>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border rounded-lg p-3 mb-4 focus:ring-2 focus:ring-blue-400"
+                  className="w-full border rounded-lg p-3 mb-4"
                 />
 
-                <div className="flex justify-between mb-4">
-                  <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-3 mb-4">
+                  <div className="flex gap-2">
                     <button
                       onClick={() => setMode("edit")}
-                      className={`px-3 py-1 rounded-lg transition ${
-                        mode === "edit"
-                          ? "bg-gray-200 font-medium"
-                          : "border hover:bg-gray-100"
-                      }`}
+                      className="px-3 py-1 border rounded cursor-pointer"
                     >
                       Edit
                     </button>
-
                     <button
                       onClick={() => setMode("preview")}
-                      className={`px-3 py-1 rounded-lg transition ${
-                        mode === "preview"
-                          ? "bg-gray-200 font-medium"
-                          : "border hover:bg-gray-100"
-                      }`}
+                      className="px-3 py-1 border rounded cursor-pointer"
                     >
                       Preview
                     </button>
@@ -276,28 +293,23 @@ function EditorPage() {
 
                   <button
                     onClick={generateChapterAI}
-                    className="bg-purple-600 text-white px-4 py-1 rounded-lg 
-                    hover:bg-purple-700 transition shadow-sm"
+                    className="bg-purple-600 text-white px-4 py-1 rounded-lg cursor-pointer hover:bg-purple-700"
                   >
                     ⚡ {loadingAI ? "Generating..." : "Generate"}
                   </button>
                 </div>
 
                 {mode === "edit" ? (
-                  <div className="border rounded-lg overflow-hidden animate-fadeIn">
-                    <MDEditor value={value} onChange={setValue} height={400} />
-                  </div>
+                  <MDEditor value={value} onChange={setValue} height={300} />
                 ) : (
-                  <div className="border rounded-lg p-4 bg-gray-50 min-h-[400px] animate-fadeIn">
-                    <MDEditor.Markdown source={value} />
-                  </div>
+                  <MDEditor.Markdown source={value} />
                 )}
               </>
             ) : (
               <>
                 <h2 className="text-xl font-semibold mb-6">Book Details</h2>
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-sm text-gray-500">Title</label>
                     <input
@@ -316,7 +328,7 @@ function EditorPage() {
                     />
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="md:col-span-2">
                     <label className="text-sm text-gray-500">Subtitle</label>
                     <input
                       value={book.subtitle || ""}
@@ -325,7 +337,6 @@ function EditorPage() {
                   </div>
                 </div>
 
-                {/* ✅ UPDATED UPLOAD */}
                 <div
                   className="mt-8 border-2 border-dashed p-6 rounded-lg text-center bg-gray-50 cursor-pointer"
                   onClick={() => document.getElementById("coverUpload").click()}

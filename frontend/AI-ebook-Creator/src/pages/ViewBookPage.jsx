@@ -13,7 +13,9 @@ function ViewBookPage() {
   const [fontSize, setFontSize] = useState(16);
   const [darkMode, setDarkMode] = useState(false);
 
-  // Load dark mode from localStorage
+  const [sidebarOpen, setSidebarOpen] = useState(false); // 🔥 NEW
+
+  // Dark mode
   useEffect(() => {
     const saved = localStorage.getItem("darkMode");
     if (saved) setDarkMode(JSON.parse(saved));
@@ -51,11 +53,23 @@ function ViewBookPage() {
 
   return (
     <div className={`flex h-screen ${darkMode ? "bg-gray-900" : "bg-gray-50"}`}>
+      {/* 🔥 MOBILE OVERLAY */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+        />
+      )}
+
       {/* SIDEBAR */}
       <div
-        className={`w-72 border-r p-5 overflow-y-auto transition ${
-          darkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white"
-        }`}
+        className={`
+        fixed lg:static z-50 top-0 left-0 h-full w-64 lg:w-72
+        transform transition-transform duration-300
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        ${darkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white"}
+        border-r p-5 overflow-y-auto
+      `}
       >
         <button
           onClick={() => navigate("/dashboard")}
@@ -70,7 +84,10 @@ function ViewBookPage() {
           {book.chapters.map((chapter, index) => (
             <div
               key={index}
-              onClick={() => setSelectedChapter(index)}
+              onClick={() => {
+                setSelectedChapter(index);
+                setSidebarOpen(false); // 🔥 close on mobile
+              }}
               className={`p-2 rounded-lg cursor-pointer transition
               ${
                 selectedChapter === index
@@ -88,13 +105,23 @@ function ViewBookPage() {
       <div className="flex-1 overflow-y-auto">
         {/* TOP BAR */}
         <div
-          className={`flex justify-between items-center px-8 py-4 border-b sticky top-0 z-10 transition
+          className={`flex flex-wrap gap-3 justify-between items-center px-4 md:px-8 py-3 md:py-4 border-b sticky top-0 z-10 transition
           ${darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white"}`}
         >
-          <h1 className="font-medium">Reading Mode</h1>
+          {/* 🔥 MENU BUTTON (mobile only) */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden px-3 py-1 border rounded"
+            >
+              ☰
+            </button>
 
-          <div className="flex items-center gap-4">
-            {/* FONT CONTROL */}
+            <h1 className="font-medium text-sm md:text-base">Reading Mode</h1>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 md:gap-4">
+            {/* FONT */}
             <button
               onClick={decreaseFont}
               className="px-2 py-1 border rounded hover:bg-gray-200 transition"
@@ -114,17 +141,16 @@ function ViewBookPage() {
             {/* DARK MODE */}
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition"
+              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition text-sm"
             >
-              {darkMode ? "☀️ Light" : "🌙 Dark"}
+              {darkMode ? "☀️" : "🌙"}
             </button>
           </div>
         </div>
 
         {/* CONTENT */}
-        <div className="px-10 py-10">
+        <div className="px-4 md:px-10 py-6 md:py-10">
           <div className="max-w-3xl mx-auto">
-            {/* TITLE */}
             <h1
               className={`font-bold mb-3 ${
                 darkMode ? "text-white" : "text-gray-900"
@@ -134,12 +160,10 @@ function ViewBookPage() {
               {currentChapter?.title}
             </h1>
 
-            {/* AUTHOR */}
             <p className="text-sm text-gray-500 mb-8">
               by {book.author || "Unknown Author"}
             </p>
 
-            {/* MARKDOWN CONTENT (FIXED DARK MODE 🔥) */}
             <div
               className={`prose max-w-none transition 
               ${
