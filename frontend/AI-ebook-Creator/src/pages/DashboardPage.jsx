@@ -123,8 +123,7 @@ const DashboardPage = () => {
                 {/* ACTION BUTTONS */}
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className="absolute top-3 right-3 opacity-0 
-                  group-hover:opacity-100 transition flex gap-2 z-20"
+                  className="absolute top-3 right-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition flex gap-2 z-20"
                 >
                   <button
                     onClick={() => navigate(`/editor/${book._id}`)}
