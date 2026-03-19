@@ -60,7 +60,7 @@ const Footer = () => {
 
             <div className="flex space-x-4">
               <a
-                href="https://github.com/"
+                href="https://github.com/anubhavsha45"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition"
@@ -78,7 +78,7 @@ const Footer = () => {
               </a>
 
               <a
-                href="https://twitter.com/"
+                href="https://twitter.com/anubhav_code"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition"

@@ -35,7 +35,12 @@ exports.registerUser = async (req, res) => {
       res.status(201).json({
         status: "success",
         token: generateToken(user._id),
-        user,
+        user: {
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+          _id: user._id,
+        },
       });
     } else {
       res.status(200).json({
@@ -117,6 +122,7 @@ exports.updateUserProfile = async (req, res) => {
       res.json({
         _id: updatedUser._id,
         name: updatedUser.name,
+        avatar: updatedUser.avatar,
       });
     } else {
       res.status(404).json({ message: "User not found" });

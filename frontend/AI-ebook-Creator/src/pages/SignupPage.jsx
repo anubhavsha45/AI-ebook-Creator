@@ -3,10 +3,10 @@ import Button from "../components/ui/Button";
 import InputField from "../components/ui/InputField";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
-
+import { useAuth } from "../context/AuthContext";
 const Signup = () => {
   const navigate = useNavigate();
-
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -42,14 +42,13 @@ const Signup = () => {
         password: formData.password,
       });
 
-      // Save token (if backend returns it)
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
+      if (res.data.token && res.data.user) {
+        login(res.data.user, res.data.token); // 🔥 FIX
       }
 
       alert("Signup successful!");
 
-      navigate("/dashboard"); // 🔥 redirect
+      navigate("/dashboard");
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "Signup failed");
