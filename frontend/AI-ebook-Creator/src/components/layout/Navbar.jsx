@@ -85,7 +85,7 @@ const Navbar = () => {
                     {/* ✅ AVATAR FIX */}
                     {user?.avatar ? (
                       <img
-                        src={`http://localhost:8000${user.avatar}`}
+                        src={`https://ai-ebook-creator-qkj3.onrender.com${user.avatar}`}
                         alt="avatar"
                         className="w-9 h-9 rounded-full object-cover"
                       />

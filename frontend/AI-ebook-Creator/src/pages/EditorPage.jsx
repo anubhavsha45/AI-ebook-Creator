@@ -343,7 +343,7 @@ function EditorPage() {
                 >
                   {book.coverImage ? (
                     <img
-                      src={`http://localhost:8000/${book.coverImage}`}
+                      src={`https://ai-ebook-creator-qkj3.onrender.com/${book.coverImage}`}
                       alt="cover"
                       className="mx-auto h-40 object-cover rounded"
                     />

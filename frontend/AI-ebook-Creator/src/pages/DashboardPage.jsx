@@ -98,7 +98,7 @@ const DashboardPage = () => {
                 <img
                   src={
                     book.coverImage
-                      ? `http://localhost:8000/${book.coverImage}`
+                      ? `https://ai-ebook-creator-qkj3.onrender.com/${book.coverImage}`
                       : "https://via.placeholder.com/300x400?text=No+Cover"
                   }
                   alt={book.title}

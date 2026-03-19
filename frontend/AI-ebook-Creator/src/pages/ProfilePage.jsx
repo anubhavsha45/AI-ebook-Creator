@@ -90,7 +90,7 @@ function ProfilePage() {
           >
             {user?.avatar ? (
               <img
-                src={`http://localhost:8000${user.avatar}`}
+                src={`https://ai-ebook-creator-qkj3.onrender.com${user.avatar}`}
                 alt="avatar"
                 className="w-full h-full object-cover"
               />
