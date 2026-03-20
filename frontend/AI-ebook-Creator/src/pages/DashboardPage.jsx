@@ -8,15 +8,19 @@ import { Pencil, Trash2 } from "lucide-react";
 const DashboardPage = () => {
   const [books, setBooks] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ NEW
 
   const navigate = useNavigate();
 
   const fetchBooks = async () => {
     try {
+      setLoading(true); // ✅ start loading
       const res = await axiosInstance.get("/api/book");
       setBooks(res.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false); // ✅ stop loading
     }
   };
 
@@ -61,8 +65,21 @@ const DashboardPage = () => {
           </button>
         </div>
 
-        {/* EMPTY STATE */}
-        {books.length === 0 ? (
+        {/* ✅ LOADING STATE */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center text-center mt-20 md:mt-28">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-600"></div>
+
+            <h2 className="mt-6 text-lg font-semibold text-gray-700">
+              Loading your eBooks...
+            </h2>
+
+            <p className="text-gray-500 text-sm mt-2 max-w-sm">
+              🚀 Server might be waking up, please wait a few seconds
+            </p>
+          </div>
+        ) : books.length === 0 ? (
+          /* EMPTY STATE */
           <div className="flex flex-col items-center justify-center text-center mt-16 md:mt-24 px-4">
             <div className="text-5xl md:text-6xl mb-4">✨</div>
 
