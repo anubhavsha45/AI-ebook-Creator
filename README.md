@@ -64,7 +64,7 @@ AI-EBOOK-CREATOR/
 
 ### 1. Clone the repository
 
-git clone https://github.com/your-username/AI-EBOOK-CREATOR.git
+git clone https://github.com/anubhavsha45/AI-EBOOK-CREATOR.git
 cd AI-EBOOK-CREATOR
 
 ---
@@ -76,7 +76,7 @@ npm install
 
 Create a .env file:
 
-PORT=5000
+PORT=8000
 MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_secret_key
 
@@ -130,7 +130,7 @@ npm run dev
 
 Anubhav Sharma
 
-- GitHub: https://github.com/your-username
+- GitHub: https://github.com/anubhavsha45
 
 ---
 
