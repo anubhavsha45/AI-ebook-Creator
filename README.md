@@ -4,8 +4,7 @@ An AI-powered full-stack web application that allows users to generate, manage, 
 
 🔗 Live Demo: https://ai-powered-ebook-creator.netlify.app/
 
----
-
+--- 
 ## ✨ Features
 
 - 🔐 User Authentication (Signup/Login)
