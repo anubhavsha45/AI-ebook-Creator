@@ -11,7 +11,7 @@ An AI-powered full-stack web application that allows users to generate, manage, 
 - 📚 Create and manage eBooks
 - 🤖 AI-generated book outlines and chapters
 - 🖼️ Upload and update book cover images
-- ✏️ Edit and delete books
+- ✏️ Edit and delete books as per requirement
 - 📤 Export eBooks (PDF)
 - 📱 Fully responsive UI
 - ⚡ Smooth user experience with toast notifications
