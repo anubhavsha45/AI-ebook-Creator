@@ -1,79 +1,111 @@
-# 🚀 AI E-Book Creator
+🚀 AI E-Book Creator
 
-An AI-powered full-stack web application that allows users to generate, manage, and export eBooks effortlessly.
+An AI-powered full-stack application that enables users to generate, manage, and export eBooks seamlessly using modern web technologies.
 
 🔗 Live Demo: https://ai-powered-ebook-creator.netlify.app/
 
---- 
-## ✨ Features
+---
 
-- 🔐 User Authentication (Signup/Login)
-- 📚 Create and manage eBooks
+✨ Features
+
+- 🔐 Secure Authentication (JWT-based Signup/Login)
+- 📚 Create, edit, and manage eBooks
 - 🤖 AI-generated book outlines and chapters
 - 🖼️ Upload and update book cover images
-- ✏️ Edit and delete books as per requirement
-- 📤 Export eBooks (PDF)
+- 📤 Export eBooks as PDF
+- ⚡ Smooth UX with toast notifications
 - 📱 Fully responsive UI
-- ⚡ Smooth user experience with toast notifications
 
 ---
 
-## 🛠️ Tech Stack
+🛠️ Tech Stack
 
-### Frontend
+Frontend
+
 - React.js (Vite)
 - Tailwind CSS
 - React Router
 - Axios
 - React Hot Toast
 
-### Backend
+Backend
+
 - Node.js
 - Express.js
-- MongoDB
+- MongoDB (Mongoose)
 - JWT Authentication
-- Multer (for file uploads)
+- Multer (file uploads)
 
-### Deployment
+Deployment
+
 - Frontend: Netlify
 - Backend: Render
 
 ---
 
-## 📁 Project Structure
+🧠 System Overview
 
-AI-EBOOK-CREATOR/
-│
-├── backend/          # Express server
-│   ├── controllers/
-│   ├── routes/
-│   ├── models/
-│   └── middleware/
-│
-├── frontend/
-│   └── AI-ebook-Creator/
-│       ├── src/
-│       ├── components/
-│       ├── pages/
-│       └── utils/
+This application follows a client-server architecture:
+
+- Frontend communicates with backend via REST APIs
+- Backend handles authentication, business logic, and data persistence
+- MongoDB stores user and book data
+- Multer handles file uploads for book covers
+- AI logic generates structured book content dynamically
 
 ---
 
-## ⚙️ Setup Instructions
+## 📁 Project Structure
 
-### 1. Clone the repository
+```bash
+AI-EBOOK-CREATOR/
+│
+├── backend/                     # Express backend
+│   ├── config/                  # Configuration files (DB, cloud, etc.)
+│   ├── controllers/             # Route controllers (business logic)
+│   ├── middlewares/             # Custom middlewares (auth, error handling)
+│   ├── models/                  # Mongoose models
+│   ├── routes/                  # API routes
+│   ├── uploads/                 # Temporary/local uploads
+│   ├── server.js                # Entry point of backend
+│   ├── package.json
+│   └── .env
+│
+├── frontend/
+│   └── AI-ebook-Creator/
+│       ├── public/              # Static assets
+│       ├── src/
+│       │   ├── assets/
+│       │   ├── components/
+│       │   ├── context/
+│       │   ├── pages/
+│       │   ├── utils/
+│       │   ├── App.jsx
+│       │   ├── main.jsx
+│       │   └── index.css
+│       │
+│       ├── index.html
+│       ├── package.json
+│       ├── eslint.config.js
+│       └── .gitignore
+```
+---
+
+⚙️ Setup Instructions
+
+1. Clone Repository
 
 git clone https://github.com/anubhavsha45/AI-EBOOK-CREATOR.git
 cd AI-EBOOK-CREATOR
 
 ---
 
-### 2. Setup Backend
+2. Backend Setup
 
 cd backend
 npm install
 
-Create a .env file:
+Create ".env" file:
 
 PORT=8000
 MONGO_URI=your_mongodb_uri
@@ -85,7 +117,7 @@ npm start
 
 ---
 
-### 3. Setup Frontend
+3. Frontend Setup
 
 cd frontend/AI-ebook-Creator
 npm install
@@ -93,9 +125,9 @@ npm run dev
 
 ---
 
-## 🌐 Environment Variables
+🌐 Environment Variables
 
-### Backend (.env)
+Backend (.env)
 
 - MONGO_URI
 - JWT_SECRET
@@ -103,29 +135,31 @@ npm run dev
 
 ---
 
-## 🚀 Deployment
+🚀 Deployment
 
-### Frontend (Netlify)
-- Build command: npm run build
-- Publish directory: dist
+Frontend (Netlify)
 
-### Backend (Render)
-- Start command: node server.js
+- Build command: "npm run build"
+- Publish directory: "dist"
 
----
+Backend (Render)
 
-## 🧠 Key Learnings
-
-- Full-stack application deployment
-- REST API integration
-- Authentication using JWT
-- Handling file uploads
-- Debugging production issues
-- Client-side routing (React + Netlify fix)
+- Start command: "node server.js"
 
 ---
 
-## 👨‍💻 Author
+🧠 Key Learnings
+
+- Designing full-stack applications
+- REST API development & integration
+- JWT-based authentication
+- File handling with Multer
+- Deployment on Netlify & Render
+- Debugging real-world production issues
+
+---
+
+👨‍💻 Author
 
 Anubhav Sharma
 
@@ -133,6 +167,8 @@ Anubhav Sharma
 
 ---
 
-## ⭐ Show your support
+⭐ Support
+
+If you found this project helpful, consider giving it a ⭐ on GitHub!
 
 If you like this project, give it a ⭐ on GitHub!
